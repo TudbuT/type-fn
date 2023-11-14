@@ -5,6 +5,14 @@ pub trait TypeFn {
     type Ret;
 }
 
+/// Calls a type-fn
+#[macro_export]
+macro_rules! call {
+    ($($fn:tt)+) => {
+        <$($fn)+ as TypeFn>::Ret
+    };
+}
+
 /// Verifies equality between two types at compile-time.
 #[macro_export]
 macro_rules! assert_types_eq {
@@ -35,11 +43,11 @@ macro_rules! assert_types_eq {
 /// You can define an arbitrary amount of functions in one macro invocation.
 #[macro_export]
 macro_rules! type_fn_impl {
-    (@a_or_else_b  => ) => {compiler_error!()};
-    (@a_or_else_b  => $($b:ident)+) => {$($b)*};
-    (@a_or_else_b $($a:ty)+ => $($b:ident)*) => { $($a)+ };
-    ($(fn < $sup:ty > $name:ident <$($($arg:ident)? $(=> $($argv:ty)+)?),* $(| $($targ:ident),+)?>
-        $(where $($tv:ty : $( + $( ?$tcqm:ident )? $( $tc:ident )? )+ ,)+)? => $ret:ty;)+)
+    {@a_or_else_b  => } => {compiler_error!()};
+    {@a_or_else_b  => $($b:ident)+} => {$($b)*};
+    {@a_or_else_b $($a:ty)+ => $($b:ident)*} => { $($a)+ };
+    {$(fn < $sup:ty > $name:ident <$($($arg:ident)? $(=> $($argv:ty)+)?),* $(| $($targ:ident),+)?>
+        $(where $($tv:ty : $( + $( ?$tcqm:ident )? $( $tc:ident )? )+ ,)+)? => $ret:ty;)+}
     => {
         $(
             impl<$($($arg, )?)* $($($targ, )*)?>
@@ -107,7 +115,7 @@ mod tests {
 
         type TwoMinusOne = <Sub<Succ<Succ<Zero>>, Succ<Zero>> as TypeFn>::Ret;
         assert_types_eq!(TwoMinusOne, Succ<Zero>);
-        assert_types_eq!(<Sub<TwoMinusOne, Succ<Zero>> as TypeFn>::Ret, Zero);
+        assert_types_eq!(call!(Sub<TwoMinusOne, Succ<Zero>>), Zero);
         assert_types_eq!(
             Succ<Succ<Succ<Succ<Zero>>>>,
             <Mul<Succ<Succ<Zero>>, Succ<Succ<Zero>>> as TypeFn>::Ret
