@@ -1,0 +1,9 @@
+[package]
+name = "type-fn"
+version = "0.1.0"
+edition = "2021"
+description = "Allows for simpler coding of type-level logic, e.g. for type-number systems."
+license = "MIT"
+repository = "https://github.com/tudbut/type-fn"
+
+[dependencies]
