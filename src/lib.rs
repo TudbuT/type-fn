@@ -13,6 +13,13 @@ macro_rules! call {
     };
 }
 
+#[macro_export]
+macro_rules! call_as {
+    ($fty:ty => $($fn:tt)+) => {
+        <$($fn)+ as $fty>::Ret
+    };
+}
+
 /// Verifies equality between two types at compile-time.
 #[macro_export]
 macro_rules! assert_types_eq {

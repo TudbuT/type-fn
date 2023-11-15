@@ -28,19 +28,13 @@ fn main() {
     struct World;
 
     type MyListA = EmptyList;
-    type MyListB = <AddElement<MyListA, World> as TypeFn>::Ret;
-    type MyListC = <AddElement<MyListB, Hello> as TypeFn>::Ret;
+    type MyListB = call!(AddElement<MyListA, World>);
+    type MyListC = call!(AddElement<MyListB, Hello>);
 
-    type RemovalA = <RemoveLastElement<MyListC> as TypeFn>::Ret;
-    println!(
-        "{}",
-        any::type_name::<<GetRemoved<RemovalA> as TypeFn>::Ret>()
-    );
+    type RemovalA = call!(RemoveLastElement<MyListC>);
+    println!("{}", any::type_name::<call!(GetRemoved<RemovalA>)>());
 
-    type MyListD = <GetChangedList<RemovalA> as TypeFn>::Ret;
-    type RemovalB = <RemoveLastElement<MyListD> as TypeFn>::Ret;
-    println!(
-        "{}",
-        any::type_name::<<GetRemoved<RemovalB> as TypeFn>::Ret>()
-    );
+    type MyListD = call!(GetChangedList<RemovalA>);
+    type RemovalB = call!(RemoveLastElement<MyListD>);
+    println!("{}", any::type_name::<call!(GetRemoved<RemovalB>)>());
 }
